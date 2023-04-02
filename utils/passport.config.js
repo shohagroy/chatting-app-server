@@ -4,14 +4,14 @@ const User = require("../models/userSchema");
 const LocalStrategy = require("passport-local").Strategy;
 
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
+  new LocalStrategy(async (email, password, done) => {
     try {
-      const user = await User.findOne({ username: username });
+      const user = await User.findOne({ email: email });
       if (!user) {
-        return done(null, false, { message: "Incorrect Username" });
+        return done(null, false, { message: "user not found!" });
       }
       if (!bcrypt.compare(password, user.password)) {
-        return done(null, false, { message: "Incorrect password" });
+        return done(null, false, { message: "incorrect password" });
       }
       return done(null, user);
     } catch (error) {

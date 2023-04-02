@@ -12,7 +12,5 @@ module.exports.genarateToken = async (userInfo) => {
     expiresIn: "1H",
   });
 
-  console.log(token);
-
   return token;
 };

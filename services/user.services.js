@@ -12,8 +12,13 @@ exports.registerService = async (userInfo) => {
     password: hasPassword,
   };
 
-  const user = await User.create(newUser);
-  const token = await genarateToken(user);
+  const createUser = await User.create(newUser);
+  const token = await genarateToken(createUser);
 
-  return token;
+  return { token, user: { email: createUser.email, _id: createUser._id } };
+};
+
+exports.loginService = async (user) => {
+  const token = await genarateToken(user);
+  return { token, user: { email: user.email, _id: user._id } };
 };

@@ -1,5 +1,7 @@
 const User = require("../models/userSchema");
-const { registerService } = require("../services/user.services");
+const bcrypt = require("bcrypt");
+
+const { registerService, loginService } = require("../services/user.services");
 
 exports.register = async (req, res) => {
   try {
@@ -10,11 +12,13 @@ exports.register = async (req, res) => {
         message: "user already exists!",
       });
     } else {
-      const token = registerService(req.body);
+      const response = await registerService(req.body);
+
       res.status(201).json({
         status: "success",
         message: "user create successfull!",
-        token,
+        token: response.token,
+        user: response.user,
       });
     }
   } catch (error) {
@@ -28,17 +32,9 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    zz;
-    const { email, password } = req.body;
+    const loginInfo = req.body;
 
-    if (!email || !password) {
-      return res.status(401).json({
-        status: "fail",
-        error: "Please provide your credentials",
-      });
-    }
-
-    const user = await findUserByEmail(email);
+    const user = await User.findOne({ email: loginInfo.email });
 
     if (!user) {
       return res.status(401).json({
@@ -47,33 +43,25 @@ exports.login = async (req, res) => {
       });
     }
 
-    const isPasswordValid = user.comparePassword(password, user.password);
+    const isCorrectPassword = await bcrypt.compare(
+      loginInfo.password,
+      user.password
+    );
 
-    if (!isPasswordValid) {
-      return res.status(403).json({
-        status: "fail",
-        error: "Password is not correct",
-      });
-    }
-
-    if (user.status != "active") {
+    if (!isCorrectPassword) {
       return res.status(401).json({
         status: "fail",
-        error: "Your account is not active yet.",
+        error: "incorrect password!",
       });
     }
 
-    const token = generateToken(user);
+    const response = await loginService(user);
 
-    const { password: pwd, ...others } = user.toObject();
-
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
-      message: "Successfully logged in",
-      data: {
-        user: others,
-        token,
-      },
+      message: "login successfull!",
+      token: response.token,
+      user: response.user,
     });
   } catch (error) {
     res.status(500).json({

@@ -1,8 +1,10 @@
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
+require("./utils/passport.config");
 
 const cors = require("cors");
+
 const userRoute = require("./routes/user.route");
 require("dotenv").config();
 
