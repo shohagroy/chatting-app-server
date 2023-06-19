@@ -5,6 +5,7 @@ const mianRoute = require("./app/routes");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const passport = require("passport");
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.use(
 );
 
 app.use(express.json());
+
+require("./app/configs/passport.config")(passport);
 
 app.use("/api/v1", mianRoute);
 //global error handler

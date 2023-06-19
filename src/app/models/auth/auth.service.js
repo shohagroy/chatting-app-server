@@ -17,10 +17,12 @@ const createUserToDb = async (userData) => {
       password: bcrypt.hashSync(password, 10),
     };
 
-    const createUser = await User.create(newUser);
+    const user = await User.create(newUser);
+
+    user.password = "";
 
     const token = await generateToken(createUser);
-    return token;
+    return { user, token };
   } else {
     throw new ApiError(400, "Email is Already Registered!");
   }

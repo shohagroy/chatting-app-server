@@ -1,10 +1,11 @@
-const { compareSync, hashSync } = require("bcrypt");
-
+const { compareSync } = require("bcrypt");
 const { PassportStatic } = require("passport");
-const { LocalStrategy } = require("passport-local");
-const { GoogleStrategy, Profile } = require("passport-google-oauth20");
-const User = require("../modules/user/user.interface");
-const envConfig = require("./env.config");
+const { Strategy: LocalStrategy } = require("passport-local");
+const {
+  Strategy: GoogleStrategy,
+  Profile,
+} = require("passport-google-oauth20");
+const User = require("../models/user/user.model");
 
 const passportConfig = (passport) => {
   passport.use(
@@ -29,7 +30,6 @@ const passportConfig = (passport) => {
       }
     )
   );
-
   // passport.use(
   //   new GoogleStrategy(
   //     {
@@ -109,4 +109,4 @@ const passportConfig = (passport) => {
   });
 };
 
-export default passportConfig;
+module.exports = passportConfig;
