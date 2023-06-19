@@ -28,6 +28,13 @@ const createUserToDb = async (userData) => {
   }
 };
 
+const getUserById = async (id) => {
+  const user = await User.findById(id).select("-password");
+
+  return user;
+};
+
 module.exports = {
   createUserToDb,
+  getUserById,
 };

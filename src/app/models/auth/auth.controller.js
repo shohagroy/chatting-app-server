@@ -1,5 +1,5 @@
 const ApiError = require("../../../errors/ApiError");
-const { createUserToDb } = require("./auth.service");
+const { createUserToDb, getUserById } = require("./auth.service");
 const passport = require("passport");
 const sendResponse = require("../../shared/sendResponse");
 const generateToken = require("../../../utils/generateToken");
@@ -51,7 +51,23 @@ const loginUser = async (req, res, next) => {
   })(req, res, next);
 };
 
+const getLoginUser = async (req, res, next) => {
+  const user = req.user;
+
+  try {
+    const loginUser = await getUserById(user?._id);
+    res.status(200).json({
+      status: "success",
+      message: "user get successfully!",
+      data: loginUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
+  getLoginUser,
 };
