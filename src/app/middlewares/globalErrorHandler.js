@@ -9,6 +9,7 @@ const globalErrorHandler = (error, req, res, next) => {
   }
   let statusCode = 500;
   let message = "Something went wrong!";
+
   let errorMessages = [];
 
   if (error instanceof Error.ValidationError) {

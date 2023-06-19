@@ -17,6 +17,8 @@ const createUser = async (req, res, next) => {
   }
 };
 
+const loginUser = async();
+
 module.exports = {
   createUser,
 };
