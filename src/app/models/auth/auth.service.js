@@ -1,7 +1,28 @@
-const createUserToDb = (userData) => {
-  console.log(userData);
+const ApiError = require("../../../errors/ApiError");
+const User = require("../user/user.model");
+const bcrypt = require("bcrypt");
 
-  return userData;
+const createUserToDb = async (userData) => {
+  const { email, password } = userData;
+
+  const alreadyRegistered = await User.findOne({ email: email });
+
+  if (!alreadyRegistered) {
+    const newUser = {
+      firstName: "",
+      lastName: "",
+      avatar: "",
+      email: email,
+      password: bcrypt.hashSync(password, 10),
+    };
+
+    const createUser = await User.create(newUser);
+    const userWithoutPassword = createUser.toObject();
+    delete userWithoutPassword.password;
+    return userWithoutPassword;
+  } else {
+    throw new ApiError(400, "Email is Already Registered!");
+  }
 };
 
 module.exports = {

@@ -1,15 +1,20 @@
+const ApiError = require("../../../errors/ApiError");
 const { createUserToDb } = require("./auth.service");
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const userData = req.body;
 
-  const response = await createUserToDb(userData);
+  try {
+    const response = await createUserToDb(userData);
 
-  res.status(201).json({
-    status: true,
-    message: "user create sussessfully!",
-    data: response,
-  });
+    res.status(201).json({
+      status: true,
+      message: "user create sussessfully!",
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
