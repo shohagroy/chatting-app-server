@@ -4,6 +4,9 @@ const env = require("../../config");
 const handleValidationError = require("../../errors/handleValidationError");
 
 const globalErrorHandler = (error, req, res, next) => {
+  if (env.node_env === "development") {
+    console.log(error);
+  }
   let statusCode = 500;
   let message = "Something went wrong!";
   let errorMessages = [];

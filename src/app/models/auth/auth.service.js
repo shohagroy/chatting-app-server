@@ -1,6 +1,7 @@
 const ApiError = require("../../../errors/ApiError");
 const User = require("../user/user.model");
 const bcrypt = require("bcrypt");
+const generateToken = require("../../../utils/generateToken");
 
 const createUserToDb = async (userData) => {
   const { email, password } = userData;
@@ -17,9 +18,9 @@ const createUserToDb = async (userData) => {
     };
 
     const createUser = await User.create(newUser);
-    const userWithoutPassword = createUser.toObject();
-    delete userWithoutPassword.password;
-    return userWithoutPassword;
+
+    const token = await generateToken(createUser);
+    return token;
   } else {
     throw new ApiError(400, "Email is Already Registered!");
   }
