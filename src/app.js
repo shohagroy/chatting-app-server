@@ -3,8 +3,6 @@ const cors = require("cors");
 const globalErrorHandler = require("./app/middlewares/globalErrorHandler");
 const mianRoute = require("./app/routes");
 
-// const globalErrorHandler = require("./app/middlewares/globalErrorHandelat");
-
 const app = express();
 
 app.use(
