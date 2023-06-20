@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const env = require("./config");
 const generateToken = require("./utils/generateToken");
+const session = require("express-session");
 
 const app = express();
 
@@ -24,8 +25,22 @@ app.use(
   })
 );
 
+app.use(
+  session({
+    secret: "your-secret-key", // Replace with your own secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // Set it to true if using HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+    },
+  })
+);
+
 app.use(express.json());
 
+app.use(passport.session());
 app.use(passport.initialize());
 require("./app/configs/passport.config")(passport);
 
@@ -44,46 +59,45 @@ app.get(
 
 // app.get("/auth/callback", async (req, res, next) => {
 //   passport.authenticate("google", async (error, user) => {
-//     const token = await generateToken(user);
+//     try {
+//       // Generate token
+//       const token = await generateToken(user);
 
-//     const redirectUrl =
-//       env.node_env !== "development"
-//         ? env.client_redirect
-//         : "http://localhost:3000";
+//       // Determine the redirect URL based on the environment
+//       const redirectUrl =
+//         env.node_env !== "development"
+//           ? env.client_redirect
+//           : "http://localhost:3000";
 
-//     const cookieOptions = {
-//       httpOnly: true,
-//       path: "/",
-//     };
+//       const cookieOptions = {
+//         path: "/",
+//       };
 
-//     if (env.node_env === "production") {
-//       cookieOptions.secure = true;
-//       cookieOptions.sameSite = "none";
+//       if (env.node_env !== "development") {
+//         cookieOptions.secure = true;
+//         cookieOptions.httpOnly = true;
+//         cookieOptions.sameSite = "none";
+//       }
+
+//       const serializedOptions = Object.entries(cookieOptions)
+//         .map(([key, value]) => `${key}=${value}`)
+//         .join("; ");
+
+//       res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
+//       res.redirect(redirectUrl);
+//     } catch (error) {
+//       // Handle other errors
+//       next(error);
 //     }
-
-//     const serializedOptions = Object.entries(cookieOptions)
-//       .map(([key, value]) => `${key}=${value}`)
-//       .join("; ");
-
-//     const cookieValue = `free_chat=${token}; ${serializedOptions}`;
-
-//     res.setHeader("Set-Cookie", cookieValue);
-//     res.redirect(redirectUrl);
 //   })(req, res, next);
 // });
 
-app.get("/auth/callback", async (req, res, next) => {
-  passport.authenticate("google", async (error, user) => {
+app.get(
+  "/auth/callback",
+  passport.authenticate("google"),
+  async (req, res, next) => {
     try {
-      if (error) {
-        // Handle authentication error
-        return res.status(401).json({ error: "Authentication failed" });
-      }
-
-      if (!user) {
-        // Handle user not found
-        return res.status(404).json({ error: "User not found" });
-      }
+      const user = req.user; // Access the user object from the request
 
       // Generate token
       const token = await generateToken(user);
@@ -108,14 +122,18 @@ app.get("/auth/callback", async (req, res, next) => {
         .map(([key, value]) => `${key}=${value}`)
         .join("; ");
 
-      res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
+      console.log(token);
+
+      if (token) {
+        res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
+      }
       res.redirect(redirectUrl);
     } catch (error) {
       // Handle other errors
       next(error);
     }
-  })(req, res, next);
-});
+  }
+);
 
 app.all("*", (req, res) => {
   res.status(500).send("No Route Found");

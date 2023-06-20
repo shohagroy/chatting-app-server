@@ -11,10 +11,10 @@ const createUser = async (req, res, next) => {
   try {
     const response = await createUserToDb(userData);
 
-    res.status(201).json({
-      statusCode: 200,
-      status: true,
-      message: "user create sussessfully!",
+    sendResponse(res, {
+      statusCode: 201,
+      success: true,
+      message: "User Create Sussessfully!",
       data: response,
     });
   } catch (error) {
@@ -60,7 +60,7 @@ const getLoginUser = async (req, res, next) => {
     const loginUser = await getUserById(user?._id);
     res.status(200).json({
       statusCode: 200,
-      status: true,
+      success: true,
       message: "user get successfully!",
       data: { user: loginUser },
     });
