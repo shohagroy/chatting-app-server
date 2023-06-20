@@ -115,7 +115,6 @@ app.get(
       if (env.node_env !== "development") {
         cookieOptions.secure = true;
         cookieOptions.httpOnly = true;
-        cookieOptions.domain = "https://free-chat-application.vercel.app/";
         cookieOptions.sameSite = "none";
       }
 
