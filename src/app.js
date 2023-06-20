@@ -51,7 +51,11 @@ app.get("/auth/callback", async (req, res, next) => {
         ? env.client_redirect
         : "http://localhost:3000";
 
-    res.setHeader("Set-Cookie", `free_chat=${token}; Path=/;`);
+    if (env.node_env !== "development") {
+      res.cookie("free_chat", token, { httpOnly: true, path: "/" });
+    } else {
+      res.setHeader("Set-Cookie", `free_chat=${token}; Path=/;`);
+    }
     res.redirect(redirectUrl);
   })(req, res, next);
 });
