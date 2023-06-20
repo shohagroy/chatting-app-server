@@ -113,8 +113,8 @@ app.get(
       };
 
       if (env.node_env !== "development") {
-        cookieOptions.secure = true;
-        cookieOptions.httpOnly = true;
+        cookieOptions.secure = false;
+        cookieOptions.httpOnly = false;
         cookieOptions.sameSite = "none";
       }
 
