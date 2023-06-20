@@ -113,10 +113,9 @@ app.get(
       };
 
       if (env.node_env !== "development") {
-        // cookieOptions.secure = true;
-        cookieOptions.domain = "free-chat-application.vercel.app";
-        // cookieOptions.httpOnly = true;
-        // cookieOptions.sameSite = "none";
+        cookieOptions.secure = true;
+        cookieOptions.httpOnly = true;
+        cookieOptions.sameSite = "none";
       }
 
       const serializedOptions = Object.entries(cookieOptions)
