@@ -42,21 +42,78 @@ app.get(
   passport.authenticate("google", { scope: ["profile"] })
 );
 
+// app.get("/auth/callback", async (req, res, next) => {
+//   passport.authenticate("google", async (error, user) => {
+//     const token = await generateToken(user);
+
+//     const redirectUrl =
+//       env.node_env !== "development"
+//         ? env.client_redirect
+//         : "http://localhost:3000";
+
+//     const cookieOptions = {
+//       httpOnly: true,
+//       path: "/",
+//     };
+
+//     if (env.node_env === "production") {
+//       cookieOptions.secure = true;
+//       cookieOptions.sameSite = "none";
+//     }
+
+//     const serializedOptions = Object.entries(cookieOptions)
+//       .map(([key, value]) => `${key}=${value}`)
+//       .join("; ");
+
+//     const cookieValue = `free_chat=${token}; ${serializedOptions}`;
+
+//     res.setHeader("Set-Cookie", cookieValue);
+//     res.redirect(redirectUrl);
+//   })(req, res, next);
+// });
+
 app.get("/auth/callback", async (req, res, next) => {
   passport.authenticate("google", async (error, user) => {
-    const token = await generateToken(user);
+    try {
+      if (error) {
+        // Handle authentication error
+        return res.status(401).json({ error: "Authentication failed" });
+      }
 
-    const redirectUrl =
-      env.node_env !== "development"
-        ? env.client_redirect
-        : "http://localhost:3000";
+      if (!user) {
+        // Handle user not found
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    if (env.node_env !== "development") {
-      res.cookie("free_chat", token, { httpOnly: true, path: "/" });
-    } else {
-      res.setHeader("Set-Cookie", `free_chat=${token}; Path=/;`);
+      // Generate token
+      const token = await generateToken(user);
+
+      // Determine the redirect URL based on the environment
+      const redirectUrl =
+        env.node_env !== "development"
+          ? env.client_redirect
+          : "http://localhost:3000";
+
+      const cookieOptions = {
+        path: "/",
+      };
+
+      if (env.node_env !== "development") {
+        cookieOptions.secure = true;
+        cookieOptions.httpOnly = true;
+        cookieOptions.sameSite = "none";
+      }
+
+      const serializedOptions = Object.entries(cookieOptions)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("; ");
+
+      res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
+      res.redirect(redirectUrl);
+    } catch (error) {
+      // Handle other errors
+      next(error);
     }
-    res.redirect(redirectUrl);
   })(req, res, next);
 });
 
