@@ -3,6 +3,7 @@ const { createUserToDb, getUserById } = require("./auth.service");
 const passport = require("passport");
 const sendResponse = require("../../shared/sendResponse");
 const generateToken = require("../../../utils/generateToken");
+const env = require("../../../config");
 
 const createUser = async (req, res, next) => {
   const userData = req.body;
@@ -17,7 +18,6 @@ const createUser = async (req, res, next) => {
       data: response,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -69,8 +69,31 @@ const getLoginUser = async (req, res, next) => {
   }
 };
 
+const userLoginWithGoogle = async (req, res, next) => {
+  const { google_client_id, google_call_back_url, node_env } = env;
+
+  try {
+    const clientId = google_client_id;
+    const callBackUrl =
+      node_env !== "development"
+        ? google_call_back_url
+        : "http://localhost:5000/auth/callback";
+
+    const authenticationURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${callBackUrl}&response_type=code&scope=email%20profile`;
+
+    res.status(200).json({
+      status: "success",
+      message: "google auth url",
+      data: authenticationURL,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
   getLoginUser,
+  userLoginWithGoogle,
 };
