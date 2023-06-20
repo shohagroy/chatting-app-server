@@ -6,24 +6,25 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const passport = require("passport");
+const env = require("./config");
 
 const app = express();
 
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: "20mb" }));
 app.use(bodyParser.urlencoded({ limit: "20mb", extended: false }));
-app.use(
-  session({
-    secret: "your-secret-key", // Replace with your own secret key
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // Set it to true if using HTTPS
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
-    },
-  })
-);
+// app.use(
+//   session({
+//     secret: "your-secret-key", // Replace with your own secret key
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       secure: false, // Set it to true if using HTTPS
+//       httpOnly: true,
+//       maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+//     },
+//   })
+// );
 
 app.use(
   cors({

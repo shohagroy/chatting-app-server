@@ -4,14 +4,16 @@ const bcrypt = require("bcrypt");
 const generateToken = require("../../../utils/generateToken");
 
 const createUserToDb = async (userData) => {
-  const { email, password } = userData;
+  const { name, email, password } = userData;
+
+  const [firstname, lastname] = name.split(" ");
 
   const alreadyRegistered = await User.findOne({ email: email });
 
   if (!alreadyRegistered) {
     const newUser = {
-      firstName: "",
-      lastName: "",
+      firstName: firstname,
+      lastName: lastname,
       avatar: "",
       email: email,
       password: bcrypt.hashSync(password, 10),
@@ -21,7 +23,8 @@ const createUserToDb = async (userData) => {
 
     user.password = "";
 
-    const token = await generateToken(createUser);
+    const token = await generateToken(user);
+
     return { user, token };
   } else {
     throw new ApiError(400, "Email is Already Registered!");
