@@ -1,9 +1,10 @@
 const sendResponse = require("../../shared/sendResponse");
-const { findAllUserToDb, getUserConversations } = require("./user.service");
+const { findAllUserToDb } = require("./user.service");
 
 const findAllUser = async (req, res, next) => {
+  const id = req.params.id;
   try {
-    const response = await findAllUserToDb();
+    const response = await findAllUserToDb(id);
 
     sendResponse(res, {
       statusCode: 200,
@@ -16,23 +17,6 @@ const findAllUser = async (req, res, next) => {
   }
 };
 
-const getUserMessages = async (req, res, next) => {
-  const { user, partner } = req.query;
-
-  try {
-    const response = await getUserConversations(user, partner);
-
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Conversations Received Successfully",
-      data: response,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 module.exports = {
   findAllUser,
-  getUserMessages,
 };
