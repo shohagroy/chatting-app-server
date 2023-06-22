@@ -42,13 +42,12 @@ const getUserConversation = async (req, res, next) => {
 const getUserLastConversations = async (req, res, next) => {
   const { email } = req.params;
 
-  // consol/e.log(id);
   try {
     const response = await getUsersAllConversationsToDb(email);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Conversations Received Successfully",
+      message: "last Message Received Successfully",
       data: response,
     });
   } catch (error) {

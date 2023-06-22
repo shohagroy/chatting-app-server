@@ -25,29 +25,40 @@ const getUserConversationToDb = async (user, partner) => {
 };
 
 const getUsersAllConversationsToDb = async (userEmail) => {
-  const lastConversations = await Conversation.aggregate([
-    {
-      $match: {
-        participants: {
-          $regex: new RegExp(`${userEmail}-|-${userEmail}`, "i"),
-        },
-      },
-    },
-    {
-      $sort: { createdAt: -1 },
-    },
-    {
-      $group: {
-        _id: "$participants",
-        lastConversation: { $first: "$$ROOT" },
-      },
-    },
-    {
-      $replaceRoot: { newRoot: "$lastConversation" },
-    },
-  ]);
+  const lastConversations = [];
+  const userPairs = [];
 
-  return lastConversations;
+  // Fetch all conversations for the user's email
+  const conversations = await Conversation.find({
+    participants: { $regex: new RegExp(userEmail, "i") },
+  }).lean();
+
+  // Extract unique user pairs from conversations
+  for (const conversation of conversations) {
+    const participants = conversation.participants;
+    const pair = participants.split("-");
+    if (pair.length === 2 && pair.includes(userEmail)) {
+      const otherUser = pair.find((email) => email !== userEmail);
+      const userPair = `${userEmail}-${otherUser}`;
+      const reversedPair = `${otherUser}-${userEmail}`;
+      if (!userPairs.includes(userPair) && !userPairs.includes(reversedPair)) {
+        userPairs.push(userPair);
+      }
+    }
+  }
+
+  for (const userPair of userPairs) {
+    const participants = [userPair, userPair.split("-").reverse().join("-")];
+    const conversation = conversations
+      .filter((c) => participants.includes(c.participants))
+      .sort((a, b) => b.createdAt - a.createdAt)[0];
+
+    if (conversation) {
+      lastConversations.push(conversation);
+    }
+  }
+
+  return lastConversations.sort((a, b) => b.createdAt - a.createdAt);
 };
 
 module.exports = {
