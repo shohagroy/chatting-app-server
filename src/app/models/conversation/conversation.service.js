@@ -8,7 +8,15 @@ const postAConversationToDb = async (data) => {
 
 const getUserConversationToDb = async (user, partner) => {
   const conversationPartner = await User.findOne({ email: partner });
-  const result = await Conversation.find({});
+
+  const query1 = `${user}-${partner}`;
+  const query2 = `${partner}-${user}`;
+
+  const result = await Conversation.find({
+    $or: [{ participants: query1 }, { participants: query2 }],
+  }).sort({
+    createdAt: 1,
+  });
 
   return {
     partner: conversationPartner,
