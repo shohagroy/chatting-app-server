@@ -39,8 +39,10 @@ const getUserConversation = async (req, res, next) => {
   }
 };
 
-const getUserLastConversations = async () => {
+const getUserLastConversations = async (req, res, next) => {
   const { email } = req.params;
+
+  // consol/e.log(id);
   try {
     const response = await getUsersAllConversationsToDb(email);
     sendResponse(res, {

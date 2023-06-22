@@ -28,7 +28,9 @@ const getUsersAllConversationsToDb = async (userEmail) => {
   const lastConversations = await Conversation.aggregate([
     {
       $match: {
-        participants: { $regex: userEmail, $options: "i" },
+        participants: {
+          $regex: new RegExp(`${userEmail}-|-${userEmail}`, "i"),
+        },
       },
     },
     {
