@@ -5,6 +5,12 @@ const findAllUserToDb = async () => {
   return users;
 };
 
+const getUserConversations = async (email, partner) => {
+  const user = await User.findOne({ email: partner });
+  return user;
+};
+
 module.exports = {
   findAllUserToDb,
+  getUserConversations,
 };

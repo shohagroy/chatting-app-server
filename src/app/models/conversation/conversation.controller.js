@@ -1,14 +1,19 @@
 const sendResponse = require("../../shared/sendResponse");
-const { findAllUserToDb, getUserConversations } = require("./user.service");
+const {
+  postAConversationToDb,
+  getUserConversationToDb,
+} = require("./conversation.service");
 
-const findAllUser = async (req, res, next) => {
+const postAConversation = async (req, res, next) => {
+  const data = req.body;
+
   try {
-    const response = await findAllUserToDb();
+    const response = await postAConversationToDb(data);
 
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "User Received Successfully",
+      message: "Message Send Successfully",
       data: response,
     });
   } catch (error) {
@@ -16,11 +21,11 @@ const findAllUser = async (req, res, next) => {
   }
 };
 
-const getUserMessages = async (req, res, next) => {
+const getUserConversation = async (req, res, next) => {
   const { user, partner } = req.query;
 
   try {
-    const response = await getUserConversations(user, partner);
+    const response = await getUserConversationToDb(user, partner);
 
     sendResponse(res, {
       statusCode: 200,
@@ -32,7 +37,8 @@ const getUserMessages = async (req, res, next) => {
     next(error);
   }
 };
+
 module.exports = {
-  findAllUser,
-  getUserMessages,
+  postAConversation,
+  getUserConversation,
 };
