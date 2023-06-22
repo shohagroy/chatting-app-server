@@ -2,11 +2,12 @@ const express = require("express");
 const {
   postAConversation,
   getUserConversation,
+  getUserLastConversations,
 } = require("./conversation.controller");
 
 const conversationRoute = express.Router();
 
 conversationRoute.route("/").post(postAConversation).get(getUserConversation);
-// userRoute.route("/conversations").get(getUserMessages);
+conversationRoute.route("/:email").get(getUserLastConversations);
 
 module.exports = conversationRoute;

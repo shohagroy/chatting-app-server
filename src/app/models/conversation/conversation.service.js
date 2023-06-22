@@ -24,7 +24,32 @@ const getUserConversationToDb = async (user, partner) => {
   };
 };
 
+const getUsersAllConversationsToDb = async (userEmail) => {
+  const lastConversations = await Conversation.aggregate([
+    {
+      $match: {
+        participants: { $regex: userEmail, $options: "i" },
+      },
+    },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $group: {
+        _id: "$participants",
+        lastConversation: { $first: "$$ROOT" },
+      },
+    },
+    {
+      $replaceRoot: { newRoot: "$lastConversation" },
+    },
+  ]);
+
+  return lastConversations;
+};
+
 module.exports = {
   postAConversationToDb,
   getUserConversationToDb,
+  getUsersAllConversationsToDb,
 };
