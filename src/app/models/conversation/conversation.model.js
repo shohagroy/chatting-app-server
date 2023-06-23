@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const conversationSchema = mongoose.Schema(
   {
+    uniqId: {
+      type: String,
+      required: true,
+    },
     participants: {
       type: String,
       required: true,

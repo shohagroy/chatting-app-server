@@ -1,6 +1,7 @@
 const app = require("./app");
 const mongoose = require("mongoose");
 const env = require("./config/index");
+const server = require("./app/socket/socket");
 
 const uri =
   env.node_env !== "production"
@@ -11,7 +12,7 @@ async function dbConnection() {
   try {
     if (env.db_uri) {
       await mongoose.connect(uri);
-      app.listen(env.port, () => {
+      server.listen(env.port, () => {
         console.log("server listening on port " + env.port);
       });
     } else {
