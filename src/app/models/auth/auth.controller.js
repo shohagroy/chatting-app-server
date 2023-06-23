@@ -40,8 +40,8 @@ const loginUser = async (req, res, next) => {
       const token = generateToken(user);
 
       user.password = "";
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Set-Cookie", `free_chat=${token}; Path=/;`);
+      // res.setHeader("Access-Control-Allow-Origin", "*");
+      // res.setHeader("Set-Cookie", `free_chat=${token}; Path=/;`);
 
       sendResponse(res, {
         statusCode: 200,

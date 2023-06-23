@@ -57,41 +57,6 @@ app.get(
   passport.authenticate("google", { scope: ["profile"] })
 );
 
-// app.get("/auth/callback", async (req, res, next) => {
-//   passport.authenticate("google", async (error, user) => {
-//     try {
-//       // Generate token
-//       const token = await generateToken(user);
-
-//       // Determine the redirect URL based on the environment
-//       const redirectUrl =
-//         env.node_env !== "development"
-//           ? env.client_redirect
-//           : "http://localhost:3000";
-
-//       const cookieOptions = {
-//         path: "/",
-//       };
-
-//       if (env.node_env !== "development") {
-//         cookieOptions.secure = true;
-//         cookieOptions.httpOnly = true;
-//         cookieOptions.sameSite = "none";
-//       }
-
-//       const serializedOptions = Object.entries(cookieOptions)
-//         .map(([key, value]) => `${key}=${value}`)
-//         .join("; ");
-
-//       res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
-//       res.redirect(redirectUrl);
-//     } catch (error) {
-//       // Handle other errors
-//       next(error);
-//     }
-//   })(req, res, next);
-// });
-
 app.get(
   "/auth/callback",
   passport.authenticate("google"),
@@ -115,14 +80,11 @@ app.get(
       if (env.node_env !== "development") {
         cookieOptions.secure = true;
         cookieOptions.httpOnly = true;
-        cookieOptions.sameSite = "none";
       }
 
       const serializedOptions = Object.entries(cookieOptions)
         .map(([key, value]) => `${key}=${value}`)
         .join("; ");
-
-      console.log(serializedOptions);
 
       if (token) {
         res.setHeader("Set-Cookie", `free_chat=${token}; ${serializedOptions}`);
