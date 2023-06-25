@@ -6,28 +6,36 @@ const server = http.createServer(app);
 
 const io = socketIO(server);
 
+let onlineUsers = [];
+
 io.on("connection", (socket) => {
-  //   console.log("A user connected");
+  socket.on("join", (newUserId) => {
+    socket.join(newUserId);
 
-  socket.on("join", (room) => {
-    socket.join(room);
-    // Perform necessary actions when a user joins a room
-  });
+    if (!onlineUsers.some((user) => user.userId === newUserId)) {
+      onlineUsers.push({ userId: newUserId, socketId: socket.id });
+    }
 
-  socket.on("conversation", (data) => {
-    // Broadcast the message to everyone in the room
-    // console.log(data);
-    io.to(data.room).emit("message", data);
+    io.emit("get-actives", onlineUsers);
   });
 
   socket.on("typing", (data) => {
-    // Broadcast typing event to everyone in the room
-    // console.log("user typing", data);
-    socket.to(data.room).emit("typing", data.user);
+    io.emit("typing", data.user);
   });
 
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
+  socket.on("disconnect", (data) => {
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+    io.emit("get-actives", onlineUsers);
+  });
+
+  socket.on("conversation", (data) => {
+    io.emit("message", data);
+  });
+
+  socket.on("offline", (id) => {
+    console.log(id);
+    onlineUsers = onlineUsers.filter((user) => user.userId !== id);
+    io.emit("get-actives", onlineUsers);
   });
 });
 
