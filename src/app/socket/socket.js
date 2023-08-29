@@ -33,7 +33,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("offline", (id) => {
-    console.log(id);
     onlineUsers = onlineUsers.filter((user) => user.userId !== id);
     io.emit("get-actives", onlineUsers);
   });

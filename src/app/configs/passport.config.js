@@ -53,8 +53,6 @@ const passportConfig = (passport) => {
           password: hashSync(sub, 10),
         };
 
-        // console.log(gogleUser);
-
         try {
           const user = await User.findOne({ email: email });
 
