@@ -1,5 +1,5 @@
 const sendResponse = require("../../shared/sendResponse");
-const { findAllUserToDb } = require("./user.service");
+const { findAllUserToDb, createOrUpdateService } = require("./user.service");
 
 const findAllUser = async (req, res, next) => {
   const id = req.params.id;
@@ -17,6 +17,22 @@ const findAllUser = async (req, res, next) => {
   }
 };
 
+const createOrUpdateUser = async (req, res, next) => {
+  const info = req.body;
+  try {
+    const response = await createOrUpdateService(info);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User Received Successfully",
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   findAllUser,
+  createOrUpdateUser,
 };
