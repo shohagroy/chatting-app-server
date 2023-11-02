@@ -9,14 +9,22 @@ const findAllUserToDb = async (id) => {
 };
 
 const createOrUpdateService = async (info) => {
-  const updatedData = { ...info, isActive: true };
-  const loginUser = await User.findOneAndUpdate({ id: info.id }, updatedData, {
-    new: true,
-    upsert: true,
-  });
-  const allUsers = await User.find({ id: { $ne: info.id } });
-  const conversations = await getUserConversations(info.id);
-  return { loginUser, allUsers, conversations };
+  try {
+    const updatedData = { ...info, isActive: true };
+    const loginUser = await User.findOneAndUpdate(
+      { id: info.id },
+      updatedData,
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+    const allUsers = await User.find({ id: { $ne: info.id } });
+    const conversations = await getUserConversations(info.id);
+    return { loginUser, allUsers, conversations };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = {
