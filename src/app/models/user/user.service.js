@@ -15,7 +15,6 @@ const createOrUpdateService = async (info) => {
     upsert: true,
   });
   const allUsers = await User.find({ id: { $ne: info.id } });
-
   const conversations = await getUserConversations(info.id);
   return { loginUser, allUsers, conversations };
 };

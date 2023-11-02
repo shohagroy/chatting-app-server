@@ -28,6 +28,7 @@ const createOrUpdateUser = async (req, res, next) => {
       data: response,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

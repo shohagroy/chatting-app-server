@@ -17,7 +17,10 @@ app.use(bodyParser.urlencoded({ limit: "20mb", extended: false }));
 
 app.use(
   cors({
-    // origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://free-chat-application.vercel.app/",
+    ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
     optionsSuccessStatus: 204,
@@ -27,13 +30,13 @@ app.use(
 
 app.use(
   session({
-    secret: "your-secret-key", // Replace with your own secret key
+    secret: "your-secret-key",
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false, // Set it to true if using HTTPS
+      secure: false,
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -49,7 +52,7 @@ app.use("/api/v1", mianRoute);
 app.use(globalErrorHandler);
 
 app.get("/", (req, res) => {
-  res.send("Free Chat Application server is running...");
+  res.send("Chat-app  server is running...");
 });
 
 app.get(
