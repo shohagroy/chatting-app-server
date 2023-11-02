@@ -25,13 +25,54 @@ const getUserConversationToDb = async (user, partner) => {
 };
 
 const getUserConversations = async (userId) => {
-  const result = await Conversation.find({
+  const userConversations = await Conversation.find({
     participants: { $regex: new RegExp(userId, "i") },
   }).sort({
     createdAt: 1,
   });
 
-  return result;
+  // return result;
+
+  const findLastConversations = (conversations, loginUser) => {
+    const lastConversationsMap = new Map();
+    for (const conversation of conversations) {
+      const participants = conversation.participants.split("-");
+
+      if (participants.includes(loginUser.id)) {
+        const otherUserId = participants.find(
+          (userId) => userId !== loginUser.id
+        );
+
+        if (lastConversationsMap.has(otherUserId)) {
+          const lastConversation = lastConversationsMap.get(otherUserId);
+          if (
+            new Date(conversation.createdAt) >
+            new Date(lastConversation.createdAt)
+          ) {
+            lastConversationsMap.set(otherUserId, conversation);
+          }
+        } else {
+          lastConversationsMap.set(otherUserId, conversation);
+        }
+      }
+    }
+
+    const lastConversations = Array.from(lastConversationsMap.values()).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    return lastConversations;
+  };
+
+  const lastConversations = findLastConversations(userConversations, {
+    id: userId,
+  });
+
+  return {
+    userConversations,
+    lastConversations,
+  };
+
+  // return result;
 };
 
 const getUsersAllConversationsToDb = async (userEmail) => {
