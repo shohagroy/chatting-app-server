@@ -1,3 +1,6 @@
+const {
+  getUserConversations,
+} = require("../conversation/conversation.service");
 const User = require("./user.model");
 
 const findAllUserToDb = async (id) => {
@@ -12,7 +15,9 @@ const createOrUpdateService = async (info) => {
     upsert: true,
   });
   const allUsers = await User.find({ id: { $ne: info.id } });
-  return { loginUser, allUsers };
+
+  const conversations = await getUserConversations(info.id);
+  return { loginUser, allUsers, conversations };
 };
 
 module.exports = {

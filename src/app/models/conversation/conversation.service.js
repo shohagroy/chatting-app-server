@@ -24,6 +24,16 @@ const getUserConversationToDb = async (user, partner) => {
   };
 };
 
+const getUserConversations = async (userId) => {
+  const result = await Conversation.find({
+    participants: { $regex: new RegExp(userId, "i") },
+  }).sort({
+    createdAt: 1,
+  });
+
+  return result;
+};
+
 const getUsersAllConversationsToDb = async (userEmail) => {
   const lastConversations = [];
   const userPairs = [];
@@ -65,4 +75,5 @@ module.exports = {
   postAConversationToDb,
   getUserConversationToDb,
   getUsersAllConversationsToDb,
+  getUserConversations,
 };
