@@ -24,7 +24,19 @@ const createOrUpdateService = async (info) => {
   }
 };
 
+const updateActiveStatus = async (activeUsers, info) => {
+  // console.log(activeUsers, "call");
+  // try {
+  //   const user = await User.findByIdAndUpdate(userId, info, { new: true });
+  //   return user;
+  // } catch (error) {
+  //   console.log(error);
+  //   // Handle the error appropriately, e.g., return an error response
+  // }
+};
+
 module.exports = {
   findAllUserToDb,
   createOrUpdateService,
+  updateActiveStatus,
 };

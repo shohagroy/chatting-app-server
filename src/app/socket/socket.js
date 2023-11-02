@@ -2,6 +2,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const app = require("../../app");
 const { updateIsSeen } = require("../models/conversation/conversation.service");
+const { updateActiveStatus } = require("../models/user/user.service");
 
 const server = http.createServer(app);
 
@@ -10,11 +11,14 @@ const io = socketIO(server);
 let onlineUsers = [];
 
 io.on("connection", (socket) => {
-  socket.on("join", (newUserId) => {
-    socket.join(newUserId);
+  socket.on("join", (loginUser) => {
+    socket.join(loginUser);
 
-    if (!onlineUsers.some((user) => user.userId === newUserId)) {
-      onlineUsers.push({ userId: newUserId, socketId: socket.id });
+    if (!onlineUsers.find((data) => data.user.id === loginUser.id)) {
+      onlineUsers.push({
+        user: { ...loginUser, isActive: true },
+        socketId: socket.id,
+      });
     }
 
     io.emit("get-actives", onlineUsers);
@@ -25,7 +29,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("unseen", async (data) => {
-    // updateNotSeen(data.new.conversationId);
     io.emit("unseen", { ...data.new, isNotSeen: true });
   });
 
@@ -36,6 +39,13 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", (data) => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+
+    // onlineUsers.map((data) => {
+    //   updateActiveStatus(data.user.userId, {
+    //     isActive: false,
+    //   });
+    // });
+
     io.emit("get-actives", onlineUsers);
   });
 
@@ -44,7 +54,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("offline", (id) => {
-    onlineUsers = onlineUsers.filter((user) => user.userId !== id);
+    onlineUsers = onlineUsers.filter((data) => data.user.userId !== id);
+    // updateActiveStatus(id, {
+    //   isActive: false,
+    // });
     io.emit("get-actives", onlineUsers);
   });
 });
