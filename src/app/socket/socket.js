@@ -5,7 +5,7 @@ const { updateIsSeen } = require("../models/conversation/conversation.service");
 
 const server = http.createServer(app);
 
-const io = socketIO(server);
+const io = socketIO(server, { transports: ["websocket"] });
 
 let onlineUsers = [];
 
