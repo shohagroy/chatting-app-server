@@ -17,7 +17,12 @@ const conversationSchema = mongoose.Schema(
 
       required: true,
     },
+
+    isNotSeen: {
+      type: Boolean,
+    },
   },
+
   {
     timestamps: true,
   }

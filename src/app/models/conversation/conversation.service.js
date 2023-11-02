@@ -6,6 +6,30 @@ const postAConversationToDb = async (data) => {
   return result;
 };
 
+//
+const updateNotSeen = async (id) => {
+  const result = await Conversation.findOneAndUpdate(
+    { conversationId: id },
+    { isNotSeen: true },
+    {
+      new: true,
+      upsert: true,
+    }
+  );
+  return result;
+};
+
+const updateIsSeen = async (id) => {
+  const result = await Conversation.updateMany(
+    { participants: id },
+    { isNotSeen: false },
+    {
+      new: true,
+    }
+  );
+  return result;
+};
+
 const getUserConversationToDb = async (user, partner) => {
   const conversationPartner = await User.findOne({ email: partner });
 
@@ -117,4 +141,6 @@ module.exports = {
   getUserConversationToDb,
   getUsersAllConversationsToDb,
   getUserConversations,
+  updateNotSeen,
+  updateIsSeen,
 };

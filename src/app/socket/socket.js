@@ -1,6 +1,7 @@
 const http = require("http");
 const socketIO = require("socket.io");
 const app = require("../../app");
+const { updateIsSeen } = require("../models/conversation/conversation.service");
 
 const server = http.createServer(app);
 
@@ -21,6 +22,16 @@ io.on("connection", (socket) => {
 
   socket.on("typing", (data) => {
     io.emit("typing", data.user);
+  });
+
+  socket.on("unseen", async (data) => {
+    // updateNotSeen(data.new.conversationId);
+    io.emit("unseen", { ...data.new, isNotSeen: true });
+  });
+
+  socket.on("seen", async (data) => {
+    updateIsSeen(data.conversationPartnerQuery);
+    io.emit("seen", data.conversationPartnerQuery);
   });
 
   socket.on("disconnect", (data) => {
