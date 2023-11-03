@@ -16,18 +16,16 @@ app.use(bodyParser.json({ limit: "20mb" }));
 app.use(bodyParser.urlencoded({ limit: "20mb", extended: false }));
 
 app.use(
-  cors()
-
-  //   {
-  //   origin: [
-  //     "http://localhost:3000",
-  //     "https://free-chat-application.vercel.app",
-  //   ],
-  //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  //   preflightContinue: false,
-  //   optionsSuccessStatus: 204,
-  //   credentials: true,
-  // }
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://free-chat-application.vercel.app",
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+  })
 );
 
 app.use(
