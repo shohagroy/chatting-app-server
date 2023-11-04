@@ -1,6 +1,3 @@
-const {
-  getUserConversations,
-} = require("../conversation/conversation.service");
 const User = require("./user.model");
 
 const createOrUpdateService = async (info) => {
@@ -9,11 +6,22 @@ const createOrUpdateService = async (info) => {
       new: true,
       upsert: true,
     });
-    const allUsers = await User.find({ id: { $ne: info.id } });
-    const { userConversations, lastConversations } = await getUserConversations(
-      info.id
-    );
-    return { loginUser, allUsers, userConversations, lastConversations };
+
+    return { loginUser };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getAllUserService = async (id) => {
+  try {
+    const result = await User.find({
+      id: {
+        $ne: id,
+      },
+    });
+
+    return result;
   } catch (error) {
     console.log(error);
   }
@@ -21,4 +29,5 @@ const createOrUpdateService = async (info) => {
 
 module.exports = {
   createOrUpdateService,
+  getAllUserService,
 };

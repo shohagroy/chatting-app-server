@@ -1,10 +1,10 @@
 const sendResponse = require("../../shared/sendResponse");
-const { findAllUserToDb, createOrUpdateService } = require("./user.service");
+const { createOrUpdateService, getAllUserService } = require("./user.service");
 
-const findAllUser = async (req, res, next) => {
+const getAllUser = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const response = await findAllUserToDb(id);
+    const response = await getAllUserService(id);
 
     sendResponse(res, {
       statusCode: 200,
@@ -34,6 +34,6 @@ const createOrUpdateUser = async (req, res, next) => {
 };
 
 module.exports = {
-  findAllUser,
+  getAllUser,
   createOrUpdateUser,
 };

@@ -1,7 +1,9 @@
 const http = require("http");
 const socketIO = require("socket.io");
 const app = require("../../app");
-const { updateIsSeen } = require("../models/conversation/conversation.service");
+const {
+  updateConversatonStatus,
+} = require("../models/conversation/conversation.service");
 
 const server = http.createServer(app);
 
@@ -20,7 +22,10 @@ io.on("connection", (socket) => {
       });
     }
 
-    io.emit("get-actives", onlineUsers);
+    io.emit(
+      "get-actives",
+      onlineUsers.filter((el) => el !== loginUser.id)
+    );
   });
 
   socket.on("typing", (data) => {
@@ -28,12 +33,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("unseen", async (data) => {
+    console.log("unseen, data", data);
     io.emit("unseen", { ...data.new, isNotSeen: true });
   });
 
   socket.on("seen", async (data) => {
-    updateIsSeen(data.conversationPartnerQuery);
-    io.emit("seen", data.conversationPartnerQuery);
+    // await updateConversatonStatus(data.id);
+    console.log(data);
+    io.emit("seen", data.id);
   });
 
   socket.on("disconnect", (data) => {
@@ -43,6 +50,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("conversation", (data) => {
+    console.log("data", data);
     io.emit("message", data);
   });
 
