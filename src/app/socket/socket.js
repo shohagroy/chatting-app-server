@@ -29,17 +29,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", (data) => {
-    io.emit("typing", data.user);
+    io.emit("typing", data.participants);
   });
 
   socket.on("unseen", async (data) => {
-    // console.log("unseen, data", data);
     io.emit("unseen", { ...data.new, isNotSeen: true });
   });
 
   socket.on("seen", async (data) => {
     await updateConversatonStatus(data.id);
-    // console.log("data", data);
     io.emit("seen", data.id);
   });
 
