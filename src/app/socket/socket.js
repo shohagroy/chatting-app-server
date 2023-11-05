@@ -51,6 +51,12 @@ io.on("connection", (socket) => {
     io.emit("message", data);
   });
 
+  socket.on("login", (data) => {
+    onlineUsers = onlineUsers.filter((info) => info.user.id !== data.id);
+
+    io.emit("get-actives", [...onlineUsers, data]);
+  });
+
   socket.on("offline", (id) => {
     onlineUsers = onlineUsers.filter((data) => data.user.userId !== id);
 
