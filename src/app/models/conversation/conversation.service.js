@@ -16,6 +16,16 @@ const updateConversatonStatus = async (id) => {
   return false;
 };
 
+const participantsConversations = async (queryOne, queryTwo) => {
+  const result = await Conversation.find({
+    participants: { $in: [queryOne, queryTwo] },
+  }).sort({
+    createdAt: 1,
+  });
+
+  return result;
+};
+
 const getUserConversations = async (userId) => {
   const userConversations = await Conversation.find({
     participants: { $regex: new RegExp(userId, "i") },
@@ -60,8 +70,54 @@ const getUserConversations = async (userId) => {
   return { lastConversations, userConversations };
 };
 
+const userLastConversations = async (userId) => {
+  const userConversations = await Conversation.find({
+    participants: { $regex: new RegExp(userId, "i") },
+  }).sort({
+    createdAt: 1,
+  });
+
+  const findLastConversations = (conversations, loginUser) => {
+    const lastConversationsMap = new Map();
+    for (const conversation of conversations) {
+      const participants = conversation.participants.split("-");
+
+      if (participants.includes(loginUser.id)) {
+        const otherUserId = participants.find(
+          (userId) => userId !== loginUser.id
+        );
+
+        if (lastConversationsMap.has(otherUserId)) {
+          const lastConversation = lastConversationsMap.get(otherUserId);
+          if (
+            new Date(conversation.createdAt) >
+            new Date(lastConversation.createdAt)
+          ) {
+            lastConversationsMap.set(otherUserId, conversation);
+          }
+        } else {
+          lastConversationsMap.set(otherUserId, conversation);
+        }
+      }
+    }
+
+    const lastConversations = Array.from(lastConversationsMap.values()).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    return lastConversations;
+  };
+
+  const lastConversations = findLastConversations(userConversations, {
+    id: userId,
+  });
+
+  return lastConversations;
+};
+
 module.exports = {
   postAConversationToDb,
   getUserConversations,
   updateConversatonStatus,
+  userLastConversations,
+  participantsConversations,
 };

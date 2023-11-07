@@ -2,12 +2,12 @@ const User = require("./user.model");
 
 const createOrUpdateService = async (info) => {
   try {
-    const loginUser = await User.findOneAndUpdate({ id: info.id }, info, {
+    const result = await User.findOneAndUpdate({ id: info.id }, info, {
       new: true,
       upsert: true,
     });
 
-    return { loginUser };
+    return result;
   } catch (error) {
     console.log(error);
   }

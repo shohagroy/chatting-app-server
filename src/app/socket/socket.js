@@ -15,17 +15,11 @@ io.on("connection", (socket) => {
   socket.on("join", (loginUser) => {
     socket.join(loginUser);
 
-    if (!onlineUsers.find((data) => data.user.id === loginUser.id)) {
-      onlineUsers.push({
-        user: { ...loginUser, isActive: true },
-        socketId: socket.id,
-      });
+    if (!onlineUsers.find((user) => user.id === loginUser.id)) {
+      onlineUsers.push({ ...loginUser, isActive: true, socketId: socket.id });
     }
 
-    io.emit(
-      "get-actives",
-      onlineUsers.filter((el) => el !== loginUser.id)
-    );
+    io.emit("get-actives", onlineUsers);
   });
 
   socket.on("typing", (data) => {
@@ -36,9 +30,9 @@ io.on("connection", (socket) => {
     io.emit("unseen", { ...data.new, isNotSeen: true });
   });
 
-  socket.on("seen", async (data) => {
-    await updateConversatonStatus(data.id);
-    io.emit("seen", data.id);
+  socket.on("seen", async (info) => {
+    await updateConversatonStatus(info.data._id);
+    io.emit("seen", info.data);
   });
 
   socket.on("disconnect", (data) => {
@@ -52,13 +46,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("login", (data) => {
-    onlineUsers = onlineUsers.filter((info) => info.user.id !== data.id);
+    onlineUsers = onlineUsers.filter((user) => user.id !== data.id);
 
     io.emit("get-actives", [...onlineUsers, data]);
   });
 
   socket.on("offline", (id) => {
-    onlineUsers = onlineUsers.filter((data) => data.user.userId !== id);
+    onlineUsers = onlineUsers.filter((user) => user.id !== id);
 
     io.emit("get-actives", onlineUsers);
   });
