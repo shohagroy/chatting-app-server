@@ -49,7 +49,7 @@ This project demonstrates proficiency in full-stack development, emphasizing rea
 
 ### Application Routes:
 
-#### User
+#### User Route
 
 - api/v1/users/create-update (PUT)
   Request body:
@@ -65,7 +65,7 @@ This project demonstrates proficiency in full-stack development, emphasizing rea
 
 - api/v1/users/:id (GET) Get All User
 
-#### User
+#### Conversations Route
 
 - api/v1/conversations (POST)
   Request body:
